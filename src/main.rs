@@ -103,9 +103,10 @@ impl World {
 
 fn main() {
     // Configuration
-    let world_width = 640;
-    let world_height = 480;
+    let world_width = 320;
+    let world_height = 240;
     let world_density = 0.5;
+    let max_steps = 100;
 
     // Create the world
     let mut world = World::new(world_width, world_height);
@@ -121,27 +122,30 @@ fn main() {
     .unwrap();
 
     // Main loop
-    while let Some(event) = window.next() {
-        // Update the world
-        world.update();
+    //while let Some(event) = window.next() {
+    for _ in 0..max_steps {
+        if let Some(event) = window.next() {
+            // Update the world
+            world.update();
 
-        // Do the render
-        window.draw_2d(&event, |context, graphics, _device| {
-            piston_window::clear([1.0; 4], graphics);
+            // Do the render
+            window.draw_2d(&event, |context, graphics, _device| {
+                piston_window::clear([1.0; 4], graphics);
 
-            for y in 0..world.height {
-                for x in 0..world.width {
-                    let cell_state = world.tiles[y][x];
-                    if cell_state == CellState::Alive {
-                        piston_window::rectangle(
-                            [0.0, 0.0, 0.0, 1.0],
-                            [x as f64, y as f64, 1.0, 1.0],
-                            context.transform,
-                            graphics,
-                        );
+                for y in 0..world.height {
+                    for x in 0..world.width {
+                        let cell_state = world.tiles[y][x];
+                        if cell_state == CellState::Alive {
+                            piston_window::rectangle(
+                                [0.0, 0.0, 0.0, 1.0],
+                                [x as f64, y as f64, 1.0, 1.0],
+                                context.transform,
+                                graphics,
+                            );
+                        }
                     }
                 }
-            }
-        });
+            });
+        }
     }
 }

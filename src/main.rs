@@ -101,12 +101,95 @@ impl World {
     }
 }
 
+fn usage() {
+    println!("Usage: gol [--help] [--width width] [--height height] [--max-steps steps]");
+    println!("");
+    println!("Options");
+    println!("    --help             Display this message");
+    println!("    --width width      Define the size of the world (default 320)");
+    println!("    --height height    Define the height of the world (default 240)");
+    println!("    --density density  Define the initial density of population of the world (default 0.5)");
+    println!("    --max-steps steps  The number of steps to run of the simulation (default 0)");
+    println!("    --loop steps       Run the simulation for ever (enabled by default)");
+}
+
 fn main() {
-    // Configuration
-    let world_width = 320;
-    let world_height = 240;
-    let world_density = 0.5;
-    let max_steps = 100;
+    // Parse args
+    let args: Vec<String> = std::env::args().collect();
+    let mut world_width = 320;
+    let mut world_height = 240;
+    let mut world_density = 0.5;
+    let mut max_steps = 0;
+    let mut run_forever = true;
+    let mut display_help = false;
+    let mut arg_index = 1;
+    while arg_index < args.len() {
+        let current_arg = &args[arg_index];
+        let next_arg = if arg_index + 1 == args.len() {
+            None
+        } else {
+            Some(&args[arg_index + 1])
+        };
+
+        if current_arg == "--help" {
+            display_help = true;
+
+            break;
+        }
+
+        if current_arg == "--width" {
+            if let Some(width) = next_arg {
+                world_width = width.parse::<usize>().unwrap();
+
+                // Consume the arg
+                arg_index += 1;
+            } else {
+                panic!("Missing value for parameter --width")
+            }
+        } else if current_arg == "--height" {
+            if let Some(height) = next_arg {
+                world_height = height.parse::<usize>().unwrap();
+
+                // Consume the arg
+                arg_index += 1;
+            } else {
+                panic!("Missing value for parameter --height")
+            }
+        } else if current_arg == "--density" {
+            if let Some(density) = next_arg {
+                world_density = density.parse::<f32>().unwrap();
+
+                // Consume the arg
+                arg_index += 1;
+            } else {
+                panic!("Missing value for parameter --density")
+            }
+        } else if current_arg == "--max-steps" {
+            if let Some(max_steps_) = next_arg {
+                max_steps = max_steps_.parse::<usize>().unwrap();
+                run_forever = false;
+
+                // Consume the arg
+                arg_index += 1;
+            } else {
+                panic!("Missing value for parameter --density")
+            }
+        } else if current_arg == "--loop" {
+            max_steps = 0;
+            run_forever = true;
+        } else {
+            panic!("Unexpected remaining argument {}", current_arg)
+        }
+
+        arg_index += 1;
+    }
+
+    // Display the help if asked
+    if display_help {
+        usage();
+
+        return;
+    }
 
     // Create the world
     let mut world = World::new(world_width, world_height);
@@ -122,30 +205,34 @@ fn main() {
     .unwrap();
 
     // Main loop
-    //while let Some(event) = window.next() {
-    for _ in 0..max_steps {
-        if let Some(event) = window.next() {
-            // Update the world
-            world.update();
+    let mut current_step = 0;
+    while let Some(event) = window.next() {
+        if !run_forever && current_step == max_steps {
+            break;
+        }
 
-            // Do the render
-            window.draw_2d(&event, |context, graphics, _device| {
-                piston_window::clear([1.0; 4], graphics);
+        // Update the world
+        world.update();
 
-                for y in 0..world.height {
-                    for x in 0..world.width {
-                        let cell_state = world.tiles[y][x];
-                        if cell_state == CellState::Alive {
-                            piston_window::rectangle(
-                                [0.0, 0.0, 0.0, 1.0],
-                                [x as f64, y as f64, 1.0, 1.0],
-                                context.transform,
-                                graphics,
-                            );
-                        }
+        // Do the render
+        window.draw_2d(&event, |context, graphics, _device| {
+            piston_window::clear([1.0; 4], graphics);
+
+            for y in 0..world.height {
+                for x in 0..world.width {
+                    let cell_state = world.tiles[y][x];
+                    if cell_state == CellState::Alive {
+                        piston_window::rectangle(
+                            [0.0, 0.0, 0.0, 1.0],
+                            [x as f64, y as f64, 1.0, 1.0],
+                            context.transform,
+                            graphics,
+                        );
                     }
                 }
-            });
-        }
+            }
+        });
+
+        current_step += 1;
     }
 }

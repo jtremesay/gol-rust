@@ -1,6 +1,4 @@
 use piston_window::*;
-use std::sync::mpsc::channel;
-use std::thread;
 
 /// The state of cell
 #[derive(Clone, Copy, PartialEq)]

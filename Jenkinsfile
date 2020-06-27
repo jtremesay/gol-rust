@@ -1,6 +1,6 @@
 pipeline {
     agent {
-        docker { image 'rust:latest-alpine' }
+        docker { image 'rust:alpine' }
     }
 
     stages {

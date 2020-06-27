@@ -1,6 +1,6 @@
 use crate::world::World;
 
-pub enum RenderBackend {
+pub enum RenderType {
     None,
     Piston,
 }

@@ -1,14 +1,14 @@
 use crate::render::Render;
 use crate::world::World;
 
-struct NoneRenderBackend {}
+struct NoneRenderType {}
 
-impl NoneRenderBackend {
+impl NoneRenderType {
     fn new() -> Self {
         Self {}
     }
 }
 
-impl Render for NoneRenderBackend {
+impl Render for NoneRenderType {
     fn render(&mut self, _: &World) {}
 }

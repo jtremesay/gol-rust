@@ -1,14 +1,14 @@
 use crate::render::Render;
 use crate::world::World;
 
-struct PistonRenderBackend {}
+struct PistonRenderType {}
 
-impl PistonRenderBackend {
+impl PistonRenderType {
     fn new() -> Self {
         Self {}
     }
 }
 
-impl Render for PistonRenderBackend {
+impl Render for PistonRenderType {
     fn render(&mut self, _: &World) {}
 }

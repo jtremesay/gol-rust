@@ -1,5 +1,3 @@
-use piston_window::*;
-
 /// The state of cell
 #[derive(Clone, Copy, PartialEq)]
 enum CellState {
@@ -114,11 +112,13 @@ fn main() {
     world.populate(world_density);
 
     // Create the main window
-    let mut window: PistonWindow =
-        WindowSettings::new("Hello Piston!", [world_width as u32, world_height as u32])
-            .exit_on_esc(true)
-            .build()
-            .unwrap();
+    let mut window: piston_window::PistonWindow = piston_window::WindowSettings::new(
+        "Hello Piston!",
+        [world_width as u32, world_height as u32],
+    )
+    .exit_on_esc(true)
+    .build()
+    .unwrap();
 
     // Main loop
     while let Some(event) = window.next() {
@@ -127,13 +127,13 @@ fn main() {
 
         // Do the render
         window.draw_2d(&event, |context, graphics, _device| {
-            clear([1.0; 4], graphics);
+            piston_window::clear([1.0; 4], graphics);
 
             for y in 0..world.height {
                 for x in 0..world.width {
                     let cell_state = world.tiles[y][x];
                     if cell_state == CellState::Alive {
-                        rectangle(
+                        piston_window::rectangle(
                             [0.0, 0.0, 0.0, 1.0],
                             [x as f64, y as f64, 1.0, 1.0],
                             context.transform,
